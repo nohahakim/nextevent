@@ -4,6 +4,7 @@ import useSWR from "swr";
 import EventList from "../../components/events/event-list";
 import ResultsTitle from "../../components/events/results-title";
 import ErrorAlert from "../../components/ui/error-alert";
+import Head from "next/head";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -19,6 +20,12 @@ export default function FilteredEventsPage() {
       </div>
     );
   }
+  let pageHeadData = (
+    <Head>
+      <title>A List of Filtered Events</title>
+      <meta name="description" content="A list of filtered events" />
+    </Head>
+  );
 
   const filteredYear = filterData[0];
   const filteredMonth = filterData[1];
@@ -42,9 +49,12 @@ export default function FilteredEventsPage() {
 
   if (!loadedEvents) {
     return (
-      <div className="center">
-        <p>Loading...</p>
-      </div>
+      <>
+        {pageHeadData}
+        <div className="center">
+          <p>Loading...</p>
+        </div>
+      </>
     );
   }
   if (error) {
@@ -64,9 +74,12 @@ export default function FilteredEventsPage() {
     numMonth > 12
   ) {
     return (
-      <ErrorAlert>
-        <p>Invalid filter!</p>
-      </ErrorAlert>
+      <>
+        {pageHeadData}
+        <ErrorAlert>
+          <p>Invalid filter!</p>
+        </ErrorAlert>
+      </>
     );
   }
 
@@ -89,6 +102,18 @@ export default function FilteredEventsPage() {
   const date = new Date(numYear, numMonth - 1);
   return (
     <>
+      <Head>
+        <title>
+          Events for {date.toLocaleString("default", { month: "long" })}{" "}
+          {numYear}
+        </title>
+        <meta
+          name="description"
+          content={`All events for ${date.toLocaleString("default", {
+            month: "long",
+          })} ${numYear}`}
+        />
+      </Head>
       <ResultsTitle date={date} />
       <EventList items={filteredEvents} />
     </>
