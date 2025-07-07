@@ -17,40 +17,29 @@ function NewsletterRegistration() {
       status: "pending",
     });
 
-    fetch("/api/newsletter", {
+    const response = await fetch("/api/newsletter", {
       method: "POST",
       body: JSON.stringify({ email: enteredEmail }),
       headers: { "Content-Type": "application/json" },
-    })
-      .then((response) => {
-        // 🌟 Step 2.2.2.1: Check response status
-        // ✅ Validates if request succeeded
-        if (response.ok) {
-          return response.json();
-        }
-        // ❌ Throws error if response is not OK
-        return response.json().then((data) => {
-          throw new Error(data.message || "Something went wrong");
-        });
-      })
-      .then((data) => {
-        // 🌟 Step 2. ceremonial2.2: Show success notification
-        // ✅ Confirms successful registration
-        notificationCtx.showNotification({
-          title: "Success",
-          message: "Successfully registered for newsletter!",
-          status: "success",
-        });
-      })
-      .catch((error) => {
-        // 🌟 Step 2.2.3: Show error notification
-        // ❌ Reports failure with error message
-        notificationCtx.showNotification({
-          title: "Error",
-          message: error.message || "Something went wrong",
-          status: "error",
-        });
+    });
+    // Using fetch to send the request
+
+    if (!response.ok) {
+      const data = await response.json();
+      notificationCtx.showNotification({
+        title: "Error signing up",
+        message: data.message || "Something went wrong.",
+        status: "error",
       });
+      return;
+    }
+    const data = await response.json();
+    notificationCtx.showNotification({
+      title: "Success!",
+      message: "Successfully registered for the newsletter!",
+      status: "success",
+    });
+    emailInputRef.current.value = "";
   }
 
   return (

@@ -14,36 +14,31 @@ function Comments(props) {
   const notificationCtx = useContext(NotificationContext);
 
   useEffect(() => {
-    // ➕ Fetch comments when component mounts
     async function fetchComments() {
-      const response = await fetch(`/api/comments/${eventId}`); // 📡 GET request to API route
-      const data = await response.json(); // 📥 Parse response
-      setComments(data.comments || []); // 🗃️ Set comments state
+      const response = await fetch(`/api/comments/${eventId}`);
+      const data = await response.json();
+      setComments(data.comments || []);
     }
 
     if (showComments) {
-      fetchComments(); // 🏃‍♂️ Fetch comments if showing
+      fetchComments();
     }
-  }, [showComments, eventId]); // 🧩 Dependency arra  y
+  }, [showComments, eventId]);
 
   async function addCommentHandler(commentData) {
-    // ➕ Async handler for new comment
     notificationCtx.showNotification({
       title: "Adding comment...",
       message: "Your comment is being added.",
       status: "pending",
     });
     const response = await fetch(`/api/comments/${eventId}`, {
-      // 📡 POST to API route
-      method: "POST", // 📬 POST method
-      body: JSON.stringify(commentData), // 📦 JSON payload
+      method: "POST",
+      body: JSON.stringify(commentData),
       headers: {
-        // 📋 Headers
-        "Content-Type": "application/json", // 📝 Specify JSON
+        "Content-Type": "application/json",
       },
     });
     if (!response.ok) {
-      // ❌ Handle error response
       const data = await response.json();
       notificationCtx.showNotification({
         title: "Error adding comment",
@@ -52,7 +47,7 @@ function Comments(props) {
       });
       return;
     }
-    const data = await response.json(); // 📥 Parse response
+    const data = await response.json();
 
     notificationCtx.showNotification({
       title: "Success",
