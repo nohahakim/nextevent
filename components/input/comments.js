@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import NotificationContext from "@/store/notification-context";
 
 import CommentList from "./comment-list";
 import NewComment from "./new-comment";
@@ -10,9 +11,7 @@ function Comments(props) {
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState([]);
 
-  function toggleCommentsHandler() {
-    setShowComments((prevStatus) => !prevStatus);
-  }
+  const notificationCtx = useContext(NotificationContext);
 
   useEffect(() => {
     // ➕ Fetch comments when component mounts
@@ -29,6 +28,11 @@ function Comments(props) {
 
   async function addCommentHandler(commentData) {
     // ➕ Async handler for new comment
+    notificationCtx.showNotification({
+      title: "Adding comment...",
+      message: "Your comment is being added.",
+      status: "pending",
+    });
     const response = await fetch(`/api/comments/${eventId}`, {
       // 📡 POST to API route
       method: "POST", // 📬 POST method
@@ -38,8 +42,26 @@ function Comments(props) {
         "Content-Type": "application/json", // 📝 Specify JSON
       },
     });
+    if (!response.ok) {
+      // ❌ Handle error response
+      const data = await response.json();
+      notificationCtx.showNotification({
+        title: "Error adding comment",
+        message: data.message || "Something went wrong.",
+        status: "error",
+      });
+      return;
+    }
     const data = await response.json(); // 📥 Parse response
-    console.log(data); // 🖨️ Log response data
+
+    notificationCtx.showNotification({
+      title: "Success",
+      message: "Comment added successfully!",
+      status: "success",
+    });
+  }
+  function toggleCommentsHandler() {
+    setShowComments((prevStatus) => !prevStatus);
   }
 
   return (

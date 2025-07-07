@@ -25,9 +25,8 @@ export default function HomePage(props) {
           content="Find a lot of great events that allow you to evolve"
         />
       </Head>
-      <h1>Featured Events</h1>
-      <EventList items={props.events} />
       <NewsletterRegistration />
+      <EventList items={props.events} />
     </>
   );
 }
