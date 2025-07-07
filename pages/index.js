@@ -1,10 +1,10 @@
 import { getFeaturedEvents } from "../helpers/api-util";
 import EventList from "../components/events/event-list";
+import NewsletterRegistration from "@/components/input/newsletter-registration";
 import Head from "next/head";
 
 export async function getStaticProps() {
   const featuredEvents = await getFeaturedEvents();
-  console.log(featuredEvents);
 
   return {
     props: {
@@ -27,6 +27,7 @@ export default function HomePage(props) {
       </Head>
       <h1>Featured Events</h1>
       <EventList items={props.events} />
+      <NewsletterRegistration />
     </>
   );
 }
